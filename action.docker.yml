@@ -1,0 +1,9 @@
+name: 'Resolves Runs On configuration'
+description: 'Resolves Runs On configuration'
+inputs:
+  github-token:
+    description: 'GitHub token'
+    required: false
+runs:
+  using: 'docker'
+  image: 'docker://ghcr.io/quarkusio/runs-on-action:main'
