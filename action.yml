@@ -7,6 +7,24 @@ inputs:
   action:
     description: 'Name of the action (if named)'
     required: false
+  main-repository:
+    description: 'Full name of the main repository e.g. org/repository'
+    required: true
+  runs-on:
+    description: 'Whether Runs-On is enabled'
+    required: false
+    default: 'false'
+  spot:
+    description: 'Whether to use Spot instances'
+    required: false
+    default: 'false'
+  ubuntu-latest:
+    description: 'Runs-On runner for ubuntu-latest'
+    required: false
+    default: 'family=m7i.xlarge/image=ubuntu24-full-x64'
+outputs:
+  config:
+    value: ${{ steps.action.outputs.config }}
 
 runs:
   using: "composite"
@@ -37,7 +55,7 @@ runs:
       uses: jbangdev/setup-jbang@main
     - name: Run the action
       id: action
-      run: jbang --java 17 --fresh --repos 'quarkus-github-action=https://maven.pkg.github.com/quarkusio/runs-on-action/' --repos 'mavencentral' io.quarkus.bot:runs-on-action:999-SNAPSHOT
+      run: jbang --java 21 --fresh --repos 'quarkus-github-action=https://maven.pkg.github.com/quarkusio/runs-on-action/' --repos 'mavencentral' io.quarkus.bot:runs-on-action:999-SNAPSHOT
       shell: bash
       env:
         JSON_INPUTS: ${{ toJSON(inputs) }}
