@@ -30,12 +30,25 @@ public class RunsOnAction {
 
     @Action
     void action(Context context, Inputs inputs, Commands commands) throws JsonProcessingException {
-        commands.notice("Resolving Runs-On configuration");
+        String mainRepository = inputs.getRequired(InputKeys.MAIN_REPOSITORY);
+        boolean isMainRepository = mainRepository.equals(context.getGitHubRepository());
+        boolean enabled = isMainRepository && inputs.getBoolean(InputKeys.RUNS_ON).orElse(false);
+        String ubuntuLatest = inputs.getRequired(InputKeys.UBUNTU_LATEST);
+        boolean spot = inputs.getRequiredBoolean(InputKeys.SPOT);
 
-        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(context, inputs));
+        StringBuilder notice = new StringBuilder("Resolving Runs-On configuration with:\n\n");
+        notice.append("Enabled: ").append(enabled).append("\n");
+        notice.append("Main repository: ").append(isMainRepository)
+                .append(isMainRepository ? "" : context.getGitHubRepository() + " detected as a fork of " + mainRepository).append("\n");
+        notice.append("Images:\n");
+        notice.append("- ubuntu-latest: ").append(ubuntuLatest).append("\n");
+        notice.append("Use Spot instances: ").append(spot);
+
+        commands.notice(notice.toString());
+
+        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(enabled, context, ubuntuLatest, spot));
         commands.setOutput(OutputKeys.CONFIG, config);
 
-        boolean enabled = inputs.getBoolean(InputKeys.RUNS_ON).orElse(false);
         StringBuilder jobSummary = new StringBuilder();
         jobSummary.append("## Runs-On configuration\n\n");
         jobSummary.append("Enabled: ").append(enabled).append("\n");
@@ -46,16 +59,17 @@ public class RunsOnAction {
             jobSummary.append("```\n");
         }
         commands.appendJobSummary(jobSummary.toString());
+
+        commands.notice("Resolved configuration:\n\n" + jobSummary);
     }
 
-    private static RunsOnConfiguration generateConfig(Context context, Inputs inputs) {
-        if (inputs.getBoolean(InputKeys.RUNS_ON).orElse(false)
-                || inputs.getRequired(InputKeys.MAIN_REPOSITORY).equals(context.getGitHubRepository())) {
+    private static RunsOnConfiguration generateConfig(boolean enabled, Context context, String ubuntuLatest, boolean spot) {
+        if (!enabled) {
             return RunsOnConfiguration.EMPTY;
         }
 
         return new RunsOnConfiguration(Map.of(IMAGE_UBUNTU_LATEST, new RunnerConfiguration(
-                String.format(RUNS_ON, context.getGitHubRunId(), inputs.getRequired(InputKeys.UBUNTU_LATEST), inputs.getRequiredBoolean(InputKeys.SPOT)),
+                String.format(RUNS_ON, context.getGitHubRunId(), ubuntuLatest, spot),
                 RUNS_ON_CACHE_ACTION)),
                 999);
     }
