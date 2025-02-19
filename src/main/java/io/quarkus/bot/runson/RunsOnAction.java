@@ -15,7 +15,7 @@ public class RunsOnAction {
 
     public static final String MAIN_REPOSITORY = "quarkusio/quarkus";
 
-    public static final String RUNS_ON_CACHE_ACTION = "runs-on/cache@v4";
+    public static final String RUNS_ON_CACHE_ACTION = "runs-on/cache";
 
     public static final String RUNS_ON = "runs-on=%d/%s/spot=%s";
 
