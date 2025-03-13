@@ -16,6 +16,7 @@ public class RunsOnAction {
     public static final String MAIN_REPOSITORY = "quarkusio/quarkus";
 
     public static final String RUNS_ON_CACHE_ACTION = "runs-on/cache";
+    public static final String GITHUB_CACHE_ACTION = "actions/cache";
 
     public static final String RUNS_ON = "runs-on=%d/%s/spot=%s%s";
 
@@ -76,7 +77,7 @@ public class RunsOnAction {
 
         return new RunsOnConfiguration(Map.of(IMAGE_UBUNTU_LATEST, new RunnerConfiguration(
                 String.format(RUNS_ON, context.getGitHubRunId(), ubuntuLatest, spot, extras),
-                RUNS_ON_CACHE_ACTION)),
+                magicCache ? GITHUB_CACHE_ACTION : RUNS_ON_CACHE_ACTION)),
                 999);
     }
 }
