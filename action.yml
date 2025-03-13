@@ -22,9 +22,14 @@ inputs:
     description: 'Runs-On runner for ubuntu-latest'
     required: false
     default: 'family=m7i.xlarge/image=ubuntu24-full-x64'
+  magic-cache:
+    description: 'Whether Magic Cache is enabled'
+    required: false
+    default: 'false'
 outputs:
   config:
     value: ${{ steps.action.outputs.config }}
+    description: 'The generated configuration in JSON format'
 
 runs:
   using: "composite"
