@@ -17,7 +17,7 @@ public class RunsOnAction {
 
     public static final String RUNS_ON_CACHE_ACTION = "runs-on/cache";
 
-    public static final String RUNS_ON = "runs-on=%d/%s/spot=%s";
+    public static final String RUNS_ON = "runs-on=%d/%s/spot=%s%s";
 
     // Linux images
     public static final String IMAGE_UBUNTU_LATEST = "ubuntu-latest";
@@ -35,6 +35,7 @@ public class RunsOnAction {
         boolean enabled = isMainRepository && inputs.getBoolean(InputKeys.RUNS_ON).orElse(false);
         String ubuntuLatest = inputs.getRequired(InputKeys.UBUNTU_LATEST);
         boolean spot = inputs.getRequiredBoolean(InputKeys.SPOT);
+        boolean magicCache = inputs.getRequiredBoolean(InputKeys.MAGIC_CACHE);
 
         StringBuilder notice = new StringBuilder("Resolving Runs-On configuration with:\n\n");
         notice.append("Enabled: ").append(enabled).append("\n");
@@ -46,7 +47,7 @@ public class RunsOnAction {
 
         commands.notice(notice.toString());
 
-        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(enabled, context, ubuntuLatest, spot));
+        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(enabled, context, ubuntuLatest, spot, magicCache));
         commands.setOutput(OutputKeys.CONFIG, config);
 
         StringBuilder jobSummary = new StringBuilder();
@@ -63,13 +64,18 @@ public class RunsOnAction {
         commands.notice("Resolved configuration:\n\n" + jobSummary);
     }
 
-    private static RunsOnConfiguration generateConfig(boolean enabled, Context context, String ubuntuLatest, boolean spot) {
+    private static RunsOnConfiguration generateConfig(boolean enabled, Context context, String ubuntuLatest, boolean spot, boolean magicCache) {
         if (!enabled) {
             return RunsOnConfiguration.EMPTY;
         }
 
+        String extras = "";
+        if (magicCache) {
+            extras = "/extras=s3-cache";
+        }
+
         return new RunsOnConfiguration(Map.of(IMAGE_UBUNTU_LATEST, new RunnerConfiguration(
-                String.format(RUNS_ON, context.getGitHubRunId(), ubuntuLatest, spot),
+                String.format(RUNS_ON, context.getGitHubRunId(), ubuntuLatest, spot, extras),
                 RUNS_ON_CACHE_ACTION)),
                 999);
     }
