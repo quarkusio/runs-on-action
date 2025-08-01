@@ -10,6 +10,7 @@ import io.quarkus.bot.runson.RunsOnConfiguration.RunnerConfiguration;
 import jakarta.inject.Inject;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class RunsOnAction {
 
@@ -37,6 +38,7 @@ public class RunsOnAction {
         String ubuntuLatest = inputs.getRequired(InputKeys.UBUNTU_LATEST);
         boolean spot = inputs.getRequiredBoolean(InputKeys.SPOT);
         boolean magicCache = inputs.getRequiredBoolean(InputKeys.MAGIC_CACHE);
+        Optional<String> ami = inputs.get(InputKeys.AMI);
 
         StringBuilder notice = new StringBuilder("Resolving Runs-On configuration with:\n\n");
         notice.append("Enabled: ").append(enabled).append("\n");
@@ -48,7 +50,7 @@ public class RunsOnAction {
 
         commands.notice(notice.toString());
 
-        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(enabled, context, ubuntuLatest, spot, magicCache));
+        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(enabled, context, ubuntuLatest, spot, magicCache, ami));
         commands.setOutput(OutputKeys.CONFIG, config);
 
         StringBuilder jobSummary = new StringBuilder();
@@ -65,18 +67,21 @@ public class RunsOnAction {
         commands.notice("Resolved configuration:\n\n" + jobSummary);
     }
 
-    private static RunsOnConfiguration generateConfig(boolean enabled, Context context, String ubuntuLatest, boolean spot, boolean magicCache) {
+    private static RunsOnConfiguration generateConfig(boolean enabled, Context context, String ubuntuLatest, boolean spot, boolean magicCache, Optional<String> ami) {
         if (!enabled) {
             return RunsOnConfiguration.EMPTY;
         }
 
-        String extras = "";
+        StringBuilder additionalLabels = new StringBuilder();
+        if (ami.isPresent()) {
+            additionalLabels.append("/ami=").append(ami.get());
+        }
         if (magicCache) {
-            extras = "/extras=s3-cache";
+            additionalLabels.append("/extras=s3-cache");
         }
 
         return new RunsOnConfiguration(Map.of(IMAGE_UBUNTU_LATEST, new RunnerConfiguration(
-                String.format(RUNS_ON, context.getGitHubRunId(), ubuntuLatest, spot, extras),
+                String.format(RUNS_ON, context.getGitHubRunId(), ubuntuLatest, spot, additionalLabels),
                 magicCache ? GITHUB_CACHE_ACTION : RUNS_ON_CACHE_ACTION)),
                 999);
     }

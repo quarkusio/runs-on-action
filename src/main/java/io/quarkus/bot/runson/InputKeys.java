@@ -7,6 +7,7 @@ public final class InputKeys {
     public static final String SPOT = "spot";
     public static final String UBUNTU_LATEST = "ubuntu-latest";
     public static final String MAGIC_CACHE = "magic-cache";
+    public static final String AMI = "ami";
 
     private InputKeys() {
     }

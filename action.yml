@@ -26,6 +26,9 @@ inputs:
     description: 'Whether Magic Cache is enabled'
     required: false
     default: 'false'
+  ami:
+    description: 'AMI to use for the runner'
+    required: false
 outputs:
   config:
     value: ${{ steps.action.outputs.config }}
