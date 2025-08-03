@@ -21,7 +21,7 @@ inputs:
   ubuntu-latest:
     description: 'Runs-On runner for ubuntu-latest'
     required: false
-    default: 'family=m7i.xlarge/image=ubuntu24-full-x64'
+    default: 'family=m7i.xlarge/image=ubuntu22-full-x64'
   magic-cache:
     description: 'Whether Magic Cache is enabled'
     required: false
