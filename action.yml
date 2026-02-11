@@ -21,7 +21,15 @@ inputs:
   ubuntu-latest:
     description: 'Runs-On runner for ubuntu-latest'
     required: false
-    default: 'family=m7i.xlarge/image=ubuntu22-full-x64'
+    default: 'ubuntu22-full-x64'
+  small-instance:
+    description: 'AWS small instance'
+    required: false
+    default: 'm6a.large'
+  large-instance:
+    description: 'AWS large instance'
+    required: false
+    default: 'm6a.xlarge'
   magic-cache:
     description: 'Whether Magic Cache is enabled'
     required: false
