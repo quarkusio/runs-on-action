@@ -42,12 +42,15 @@ public class RunsOnAction {
         String mainRepository = inputs.getRequired(InputKeys.MAIN_REPOSITORY);
         boolean isMainRepository = mainRepository.equals(context.getGitHubRepository());
         boolean enabled = isMainRepository && inputs.getBoolean(InputKeys.RUNS_ON).orElse(false);
-        String ubuntuLatest = inputs.getRequired(InputKeys.UBUNTU_LATEST);
+        //String ubuntuLatest = inputs.getRequired(InputKeys.UBUNTU_LATEST);
         String smallInstance = inputs.getRequired(InputKeys.SMALL_INSTANCE);
         String largeInstance = inputs.getRequired(InputKeys.LARGE_INSTANCE);
         boolean spot = inputs.getRequiredBoolean(InputKeys.SPOT);
         boolean magicCache = inputs.getRequiredBoolean(InputKeys.MAGIC_CACHE);
         Optional<String> ami = inputs.get(InputKeys.AMI);
+
+        String branch = context.getGitHubBaseRef() == null ? context.getGitHubRefName() : context.getGitHubBaseRef();
+        String ubuntuLatest = Images.getUbuntuLatest(branch);
 
         StringBuilder notice = new StringBuilder("Resolving Runs-On configuration with:\n\n");
         notice.append("Enabled: ").append(enabled).append("\n");
