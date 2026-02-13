@@ -103,7 +103,7 @@ public class RunsOnAction {
                     String.format(RUNS_ON, context.getGitHubRunId(), largeInstance, ubuntuLatest, spot, additionalLabels), magicCache ? GITHUB_CACHE_ACTION : RUNS_ON_CACHE_ACTION));
             // in case we still have an older config
             runnerConfigurations.put(IMAGE_UBUNTU_LATEST, new RunnerConfiguration(
-                    String.format(RUNS_ON, context.getGitHubRunId(), smallInstance, ubuntuLatest, spot, additionalLabels), magicCache ? GITHUB_CACHE_ACTION : RUNS_ON_CACHE_ACTION));
+                    String.format(RUNS_ON, context.getGitHubRunId(), largeInstance, ubuntuLatest, spot, additionalLabels), magicCache ? GITHUB_CACHE_ACTION : RUNS_ON_CACHE_ACTION));
         } else {
             runnerConfigurations = Map.of(IMAGE_UBUNTU_LATEST, new RunnerConfiguration(
                     String.format(RUNS_ON_LEGACY, context.getGitHubRunId(), ubuntuLatest, spot, additionalLabels), magicCache ? GITHUB_CACHE_ACTION : RUNS_ON_CACHE_ACTION));
