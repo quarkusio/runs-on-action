@@ -47,6 +47,7 @@ public class RunsOnAction {
         String largeInstance = inputs.getRequired(InputKeys.LARGE_INSTANCE);
         boolean spot = inputs.getRequiredBoolean(InputKeys.SPOT);
         boolean magicCache = inputs.getRequiredBoolean(InputKeys.MAGIC_CACHE);
+        String volume = inputs.getRequired(InputKeys.VOLUME);
         Optional<String> ami = inputs.get(InputKeys.AMI);
 
         String branch = context.getGitHubBaseRef() == null ? context.getGitHubRefName() : context.getGitHubBaseRef();
@@ -62,7 +63,7 @@ public class RunsOnAction {
 
         commands.notice(notice.toString());
 
-        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(enabled, context, ubuntuLatest, smallInstance, largeInstance, spot, magicCache, ami));
+        String config = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(generateConfig(enabled, context, ubuntuLatest, smallInstance, largeInstance, spot, magicCache, volume, ami));
         commands.setOutput(OutputKeys.CONFIG, config);
 
         StringBuilder jobSummary = new StringBuilder();
@@ -80,12 +81,13 @@ public class RunsOnAction {
     }
 
     private static RunsOnConfiguration generateConfig(boolean enabled, Context context, String ubuntuLatest,
-                                                      String smallInstance, String largeInstance, boolean spot, boolean magicCache, Optional<String> ami) {
+                                                      String smallInstance, String largeInstance, boolean spot, boolean magicCache, String volume, Optional<String> ami) {
         if (!enabled) {
             return RunsOnConfiguration.EMPTY;
         }
 
         StringBuilder additionalLabels = new StringBuilder();
+        additionalLabels.append("/volume=").append(volume);
         if (ami.isPresent()) {
             additionalLabels.append("/ami=").append(ami.get());
         }

@@ -30,6 +30,10 @@ inputs:
     description: 'AWS large instance'
     required: false
     default: 'm6a.xlarge'
+  volume:
+    description: 'Volume configuration for the runner (e.g. 80gb:gp3)'
+    required: false
+    default: '80gb:gp3'
   magic-cache:
     description: 'Whether Magic Cache is enabled'
     required: false
